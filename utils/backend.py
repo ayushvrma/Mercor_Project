@@ -106,7 +106,7 @@ def preprocess_code(file_url, max_chunk_length=4096):
         else:
             # If the current chunk is not empty, add it to the list of chunks
             if current_chunk:
-                chunk_with_prompt = encoding.encode(f'You are a code complexity analyser, you will go through the 1 file in piece of code chunks and analyse their complexity and provide me with a score out of 10, it can be upto 2 decimal places. i will provide you code chunks in multiple messages with "CONTINUED IN NEXT MESSAGE" written on end of 1 chunk with "END OF FILE" written when the file is completed. you will then start your analysis on the code and provide me with a score, reason. Say "lets start ayush" to get started\n{current_chunk.strip()}\nCONTINUED IN NEXT MESSAGE...\n')
+                chunk_with_prompt = encoding.encode(f'You are a code complexity analyser, you will go through the 1 file in piece of code chunks and analyse their complexity and provide me with a score out of 10, it can be upto 2 decimal places in the first line of your response. i will provide you code chunks in multiple messages with "CONTINUED IN NEXT MESSAGE" written on end of 1 chunk with "END OF FILE" written when the file is completed. you will then start your analysis on the code and provide me with a score, reason. Say "lets start ayush" to get started\n{current_chunk.strip()}\nCONTINUED IN NEXT MESSAGE...\n')
                 chunks.append(chunk_with_prompt)
             current_chunk = line + '\n'
 

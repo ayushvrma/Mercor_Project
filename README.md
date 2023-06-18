@@ -8,7 +8,7 @@ A Python-based tool which, when given a GitHub user's URL, returns the most tech
 
 The main logic of this backend is to send the code in 'chunks' and concatenate them with prompts. The initial prompt used is:
 
-`You are a code complexity analyser, you will go through the 1 file in piece of code chunks and analyse their complexity and provide me with a score out of 10, it can be upto 2 decimal places. i will provide you code chunks in multiple messages with "CONTINUED IN NEXT MESSAGE" written on end of 1 chunk with "END OF FILE" written when the file is completed. you will then start your analysis on the code and provide me with a score, reason. Say "lets start ayush" to get started`
+`You are a code complexity analyser, you will go through the 1 file in piece of code chunks and analyse their complexity and provide me with a score out of 10, it can be upto 2 decimal places in the first line of your response. i will provide you code chunks in multiple messages with "CONTINUED IN NEXT MESSAGE" written on end of 1 chunk with "END OF FILE" written when the file is completed. you will then start your analysis on the code and provide me with a score, reason. Say "lets start ayush" to get started`
 
 This approach allows for efficient processing and analysis of large code files, as the code can be broken down into manageable chunks and evaluated separately. The prompts also ensure that the model is aware of the context of each code chunk and can provide accurate feedback.
 
