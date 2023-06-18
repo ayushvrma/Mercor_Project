@@ -6,8 +6,9 @@ def generate_gpt_response(prompt):
     openai.api_key = API_KEY
     
     # Generate GPT response
+    # prompt = 'Analyse the following repository codes and tell me which one is the most complex'
     response = openai.Completion.create(
-        engine='text-davinci-003',
+        engine='gpt-3.5-turbo',
         prompt=prompt,
         max_tokens=100,
         temperature=0.8

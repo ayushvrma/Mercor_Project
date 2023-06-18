@@ -8,9 +8,35 @@
 <body>
     <h1>GitHub Repository Analyzer - Results</h1>
     <h2>Most Complex Repository:</h2>
-    <p>Name: {{ repository.name }}</p>
-    <p>Description: {{ repository.description }}</p>
-    <p>GPT Analysis: {{ gpt_response }}</p>
+    <p>Name: magicleap/SuperGluePretrainedNetwork</p>
+    <p>Complexity Score: 8 on 10</p>
+    <h3>Reason:</h3>
+    <p>Here are the reasons for this rating:</p>
+    <ul>
+        <li>Imports and External Dependencies: The code imports several modules and external dependencies, such as
+            pathlib, argparse, cv2, matplotlib, and torch. This adds complexity as it introduces external
+            functionalities and potential interactions with these libraries.</li>
+        <li>Command-Line Arguments: The code uses the argparse module to parse command-line arguments. This allows users
+            to customize the behavior of the program, but it adds complexity due to the need for argument handling and
+            validation.</li>
+        <li>Configuration: The code defines a configuration dictionary that contains various settings and parameters for
+            the matching process. Configurations can introduce complexity, especially when there are multiple parameters
+            and their interactions need to be managed.</li>
+        <li>I/O Operations: The code performs input/output operations to read frames from a video stream or image
+            directory and write output frames to a directory. Handling I/O operations, such as reading and writing
+            files, can contribute to code complexity.</li>
+        <li>Control Flow: The code includes multiple conditional statements, loops, and branching logic to control the
+            flow of execution. This can make the code more intricate and harder to understand.</li>
+        <li>Visualization and User Interaction: The code includes visualization components and keyboard control for user
+            interaction. Visualizing matches, toggling keypoints, and changing thresholds based on user input introduce
+            additional complexity.</li>
+        <li>Module Interactions: The code utilizes functionality from custom-defined modules, such as models.matching
+            and models.utils. Interactions between different modules can increase complexity, especially when the
+            codebase becomes larger and the module dependencies become more intricate.</li>
+    </ul>
+    <p>Overall, the provided code demonstrates moderate complexity due to the involvement of external dependencies,
+        command-line argument parsing, configuration management, I/O operations, control flow, visualization, and module
+        interactions.</p>
 </body>
 
 </html>

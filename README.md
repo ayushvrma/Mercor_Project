@@ -2,6 +2,17 @@
 
 a Python-based tool which, when given a GitHub user's URL, returns the most technically complex and challenging repository from that user's profile. The tool will use GPT and LangChain to assess each repository individually before determining the most technically challenging one.
 
+## Backend Logic
+--------------
+
+The main logic of this backend is to send the code in 'chunks' and concatenate them with prompts. The prompts used are:
+
+1. `'Provide me a score of code complexity out of 10 for the following code'` for each code file
+2. `'Continued in next message...'` for each chunk of code
+
+This approach allows for efficient processing and analysis of large code files, as the code can be broken down into manageable chunks and evaluated separately. The prompts also ensure that the model is aware of the context of each code chunk and can provide accurate feedback.
+
+
 - `app/`: Contains the web application code.
   - `templates/`: Holds the HTML templates for the user interface.
   - `__init__.py`: Initializes the Flask application and defines routes.
