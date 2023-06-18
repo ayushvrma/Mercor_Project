@@ -4,6 +4,8 @@ from config import skip_files_extensions, skip_files_patterns, proper_file_names
 import nbconvert
 import tiktoken
 
+from utils.gpt import generate_gpt_response
+
 def fetch_repositories(username):
     # Make the API request to fetch repositories
     response = requests.get(f'https://api.github.com/users/{username}/repos')
@@ -17,8 +19,7 @@ def fetch_repositories(username):
         repo_name = repo['name']
 
         # Fetch files for the repository
-        # files_url = f"https://api.github.com/repos/{username}/{repo_name}/contents"
-        files_url = f"https://api.github.com/repos/ayushvrma/opencvtutorial/contents"
+        files_url = f"https://api.github.com/repos/{username}/{repo_name}/contents"
         files_response = requests.get(files_url)
         files = files_response.json()
 
@@ -53,7 +54,7 @@ def fetch_repositories(username):
 
             # Calculate score for each chunk
             for chunk in code_chunks:
-                score, reason = gpt(chunk)
+                score, reason = generate_gpt_response(chunk)
 
                 # Accumulate score and increment chunk count
                 total_score += score
@@ -111,7 +112,7 @@ def preprocess_code(file_url, max_chunk_length=4096):
 
     # Add the last chunk to the list if it's not empty
     if current_chunk:
-        chunk_with_prompt = f'You are a code complexity analyser, you will go through the 1 file in piece of code chunks and analyse their complexity and provide me with a score out of 10, it can be upto 2 decimal places. i will provide you code chunks in multiple messages with "CONTINUED IN NEXT MESSAGE" written on end of 1 chunk with "END OF FILE" written when the file is completed. you will then start your analysis on the code and provide me with a score, reason. Say "lets start ayush" to get started\n{current_chunk.strip()}\n \END OF FILE\n'
+        chunk_with_prompt = f'{current_chunk.strip()}\n \END OF FILE\n'
         chunks.append(chunk_with_prompt)
 
     # Prepend the file name to each chunk
@@ -119,6 +120,3 @@ def preprocess_code(file_url, max_chunk_length=4096):
     chunks = [f'File Name: {file_name}\n{chunk}' for chunk in chunks]
 
     return chunks
-
-
-fetch_repositories('ayushvrma')

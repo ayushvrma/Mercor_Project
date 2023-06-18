@@ -1,0 +1,5 @@
+Flask==2.3.2
+nbconvert==6.5.0
+openai==0.27.8
+Requests==2.31.0
+tiktoken==0.4.0

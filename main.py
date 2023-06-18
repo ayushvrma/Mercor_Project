@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request
-from utils.github_api import fetch_repositories
-from utils.preprocessing import preprocess_code
+from utils.backend import fetch_repositories
 from utils.gpt import generate_gpt_response
 
 app = Flask(__name__, template_folder = 'app/templates')
@@ -16,10 +15,10 @@ def analyze():
 
     try:
         # Fetch user repositories
-        repositories = fetch_repositories(username)
-        print(repositories)
+        most_complex_repo, reason = fetch_repositories(username)
+        print(most_complex_repo,reason)
         
-        return render_template('result.html', repository=repositories['name'])
+        return render_template('result.html', repository=most_complex_repo, reason=reason)
 
     except Exception as e:
         return render_template('error.html', error_message=str(e))
