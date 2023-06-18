@@ -1,5 +1,8 @@
+import re
 import requests
 from config import skip_files_extensions, skip_files_patterns, proper_file_names
+import nbconvert
+import tiktoken
 
 def fetch_repositories(username):
     # Make the API request to fetch repositories
@@ -22,6 +25,7 @@ def fetch_repositories(username):
         # Initialize variables for calculating average score
         total_score = 0
         num_chunks = 0
+        reason = ''
 
         # Process each file and calculate score
         for file in files:
@@ -43,15 +47,13 @@ def fetch_repositories(username):
                 print(code_content)
             except requests.exceptions.RequestException:
                 continue
-            break
 
             # Preprocess code into chunks
             code_chunks = preprocess_code(download_url)
 
             # Calculate score for each chunk
             for chunk in code_chunks:
-                # Perform further processing on each code chunk
-                # ...
+                score, reason = gpt(chunk)
 
                 # Accumulate score and increment chunk count
                 total_score += score
@@ -67,16 +69,21 @@ def fetch_repositories(username):
         if avg_score > max_complexity:
             max_complexity = avg_score
             most_complex_repo = repo_name
+            most_complex_reason = reason
 
-    return most_complex_repo
+    return most_complex_repo, reason
 
-import nbconvert
 
 def preprocess_code(file_url, max_chunk_length=4096):
     # Make the API request to fetch the code from the file URL
     response = requests.get(file_url)
     file_content = response.text
-
+    # Remove comments
+    code = re.sub(r"#.*", "", code)
+    
+    # Remove blank lines
+    code = "\n".join(line for line in code.splitlines() if line.strip())
+    
     # Check if the file is a Jupyter notebook
     if file_url.endswith('.ipynb'):
         # Convert Jupyter notebook to Python code using nbconvert
@@ -89,24 +96,27 @@ def preprocess_code(file_url, max_chunk_length=4096):
     chunks = []
     current_chunk = ''
     lines = code.splitlines()
+    encoding = tiktoken.encoding_for_model('gpt-3.5-turbo')
 
-    for line in lines:
+    for line in encoding:
         # Check if adding the line to the current chunk exceeds the maximum length
-        if len(current_chunk) + len(line) <= max_chunk_length:
+        if len(current_chunk) + len(line) + 2 <= max_chunk_length:  # Adding 2 for prompt lines
             current_chunk += line + '\n'
         else:
             # If the current chunk is not empty, add it to the list of chunks
             if current_chunk:
-                chunks.append(current_chunk + 'Continued in next message\n')
+                chunk_with_prompt = encoding.encode(f'You are a code complexity analyser, you will go through the 1 file in piece of code chunks and analyse their complexity and provide me with a score out of 10, it can be upto 2 decimal places. i will provide you code chunks in multiple messages with "CONTINUED IN NEXT MESSAGE" written on end of 1 chunk with "END OF FILE" written when the file is completed. you will then start your analysis on the code and provide me with a score, reason. Say "lets start ayush" to get started\n{current_chunk.strip()}\nCONTINUED IN NEXT MESSAGE...\n')
+                chunks.append(chunk_with_prompt)
             current_chunk = line + '\n'
 
     # Add the last chunk to the list if it's not empty
     if current_chunk:
-        chunks.append(current_chunk)
+        chunk_with_prompt = f'You are a code complexity analyser, you will go through the 1 file in piece of code chunks and analyse their complexity and provide me with a score out of 10, it can be upto 2 decimal places. i will provide you code chunks in multiple messages with "CONTINUED IN NEXT MESSAGE" written on end of 1 chunk with "END OF FILE" written when the file is completed. you will then start your analysis on the code and provide me with a score, reason. Say "lets start ayush" to get started\n{current_chunk.strip()}\n \END OF FILE\n'
+        chunks.append(chunk_with_prompt)
 
     # Prepend the file name to each chunk
     file_name = file_url.split('/')[-1]
-    chunks = [file_name + '\n' + chunk for chunk in chunks]
+    chunks = [f'File Name: {file_name}\n{chunk}' for chunk in chunks]
 
     return chunks
 
